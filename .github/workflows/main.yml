@@ -1,13 +1,13 @@
-name: Auto-Book Lidl Data
+name: Lidl Stealth Engine
 
 on:
   schedule:
-    # Запускать каждые 30 минут. Синтаксис Cron.
-    - cron: '*/30 * * * *'
-  workflow_dispatch: # Позволяет запускать скрипт кнопкой вручную
+    # Запуск каждый час в 17 минут (ломает антифрод-таймеры)
+    - cron: '17 * * * *'
+  workflow_dispatch: # Кнопка для ручного запуска теста
 
 jobs:
-  book_data:
+  ninja_booking:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -16,9 +16,13 @@ jobs:
         with:
           python-version: '3.10'
       - name: Install dependencies
-        run: pip install requests
-      - name: Run script
+        run: pip install requests tzdata
+      - name: Execute Payload
         env:
+          # Основные креды
           LIDL_PHONE: ${{ secrets.LIDL_PHONE }}
           LIDL_PASSWORD: ${{ secrets.LIDL_PASSWORD }}
+          # Ключи для ТГ (если не добавишь - скрипт просто не будет слать пуши, но продолжит работать)
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
         run: python lidl_cloud.py
